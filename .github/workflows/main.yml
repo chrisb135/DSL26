@@ -1,0 +1,44 @@
+name: ADF4350 Kernel CI
+
+on: [push]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Toolchain and Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu build-essential libncurses-dev flex bison bc libssl-dev expect qemu-system-arm
+
+      - name: Build Module
+        run: |
+          # Aqui você rodaria o make usando o cross-compiler
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+
+      name: Baixar Imagens do QEMU (Opção A)
+        run: |
+          # 1. Cria as pastas onde o test_script.sh espera encontrar os arquivos
+          mkdir -p vm/arm64_boot
+          mkdir -p iio/arch/arm64/boot
+
+          # 2. Baixa a imagem do disco rootfs (qcow2)
+          # SUBSTITUA A URL ABAIXO PELO LINK REAL DO SEU ARQUIVO
+          wget -O vm/arm64_img.qcow2 "https://link-para-seu-servidor/arm64_img.qcow2"
+
+          # 3. Baixa o kernel compilado (Image)
+          # SUBSTITUA A URL ABAIXO PELO LINK REAL DO SEU ARQUIVO
+          wget -O iio/arch/arm64/boot/Image "https://link-para-seu-servidor/Image"
+
+          # 4. Baixa o initrd
+          # SUBSTITUA A URL ABAIXO PELO LINK REAL DO SEU ARQUIVO
+          wget -O vm/arm64_boot/initrd.img-6.1.0-43-arm64 "https://link-para-seu-servidor/initrd.img-6.1.0-43-arm64"
+
+      - name: Run Integration Test in QEMU
+        run: |
+          # Garante que o script tem permissão de execução
+          chmod +x test_script.sh
+          ./test_script.sh
