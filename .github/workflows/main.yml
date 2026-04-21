@@ -44,7 +44,7 @@ jobs:
           mkdir mnt_tmp
           sudo mount -o loop transfer.img mnt_tmp
           # ATENÇÃO: Ajuste o caminho abaixo para onde o seu .ko é gerado!
-          sudo cp drivers/iio/frequency/adf4350.ko mnt_tmp/
+          sudo cp adf4350.ko mnt_tmp/
           sudo umount mnt_tmp
 
       - name: Baixar Imagens do QEMU (Opção A)
