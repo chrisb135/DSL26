@@ -16,24 +16,23 @@ jobs:
 
       - name: Baixar e Preparar Headers do Kernel ARM64
         run: |
-          # Baixa o código fonte do Linux 6.1
-          wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.tar.xz
-          tar -xf linux-6.1.tar.xz
+          # Baixa o código fonte do Linux 7.0 (Note que mudamos a pasta para v7.x)
+          wget https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.0.tar.xz
+          tar -xf linux-7.0.tar.xz
 
           # Entra na pasta do kernel recém-baixado
-          cd linux-6.1
+          cd linux-7.0
 
-          # Prepara a configuração do kernel alvo para arquitetura ARM64
+          # Prepara a configuração
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules_prepare
 
-          # Volta para a raiz do seu repositório
           cd ..
 
       - name: Build Module
         run: |
-          # Agora rodamos o SEU Makefile, mas apontando o KDIR para a pasta que preparamos
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KDIR=$GITHUB_WORKSPACE/linux-6.1
+          # Mude a pasta KDIR aqui para apontar para o linux-7.0
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KDIR=$GITHUB_WORKSPACE/linux-7.0
 
       - name: Criar disco de transferencia com o modulo
         run: |
