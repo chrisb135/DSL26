@@ -15,16 +15,26 @@ expect << 'OUTER_EOF'
         -kernel "$env(IIO_TREE)/arch/arm64/boot/Image" \
         -initrd "$env(BOOT_DIR)/initrd.img-6.1.0-43-arm64" \
         -append "console=ttyAMA0 loglevel=8 root=/dev/vda2 rootwait" \
-        -drive if=none,file="$env(VM_DIR)/arm64_img.qcow2",format=qcow2,id=hd \
-        -device virtio-blk-pci,drive=hd -nographic -no-reboot
+        -drive if=none,file="$env(VM_DIR)/arm64_base_400mb.qcow2",format=qcow2,id=hd \
+        -device virtio-blk-pci,drive=hd \
+        -drive if=none,file="transfer.img",format=raw,id=hd2 \
+        -device virtio-blk-pci,drive=hd2 \
+        -nographic -no-reboot
 
     expect "login:" { send "root\r" }
     expect -re {root@.*[:~]# }
 
-    # 1. Tenta carregar o módulo
-    send "modprobe adf4350\r"
+    # 1. Monta o segundo disco (pendrive virtual) que geralmente é o /dev/vdb
+    send "mkdir -p /mnt/transfer\r"
     expect -re {root@.*[:~]# }
-    
+
+    send "mount /dev/vdb /mnt/transfer\r"
+    expect -re {root@.*[:~]# }
+
+    # 2. Carrega o módulo DIRETAMENTE do arquivo .ko
+    send "insmod /mnt/transfer/adf4350.ko\r"
+    expect -re {root@.*[:~]# }
+
     # 2. Localiza o dispositivo no subsistema IIO
     # (Pode ser iio:device0, device1, etc)
     send "cd /sys/bus/iio/devices/iio:device0/\r"

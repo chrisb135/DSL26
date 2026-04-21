@@ -19,7 +19,20 @@ jobs:
           # Aqui você rodaria o make usando o cross-compiler
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
 
-      name: Baixar Imagens do QEMU (Opção A)
+      - name: Criar disco de transferencia com o modulo
+        run: |
+          # Cria um arquivo vazio de 10MB
+          dd if=/dev/zero of=transfer.img bs=1M count=10
+          # Formata como ext4
+          mkfs.ext4 transfer.img
+          # Monta o disco e copia o módulo recém-compilado
+          mkdir mnt_tmp
+          sudo mount -o loop transfer.img mnt_tmp
+          # ATENÇÃO: Ajuste o caminho abaixo para onde o seu .ko é gerado!
+          sudo cp drivers/iio/frequency/adf4350.ko mnt_tmp/
+          sudo umount mnt_tmp
+
+      - name: Baixar Imagens do QEMU (Opção A)
         run: |
           # 1. Cria as pastas onde o test_script.sh espera encontrar os arquivos
           mkdir -p vm/arm64_boot
