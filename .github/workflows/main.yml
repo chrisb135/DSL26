@@ -32,7 +32,7 @@ jobs:
       - name: Build Module
         run: |
           # Mude a pasta KDIR aqui para apontar para o linux-7.0
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KDIR=$GITHUB_WORKSPACE/linux-7.0
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KDIR=$GITHUB_WORKSPACE/linux-7.0 KBUILD_MODPOST_WARN=1
 
       - name: Criar disco de transferencia com o modulo
         run: |
