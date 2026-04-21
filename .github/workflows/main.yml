@@ -14,10 +14,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu build-essential libncurses-dev flex bison bc libssl-dev expect qemu-system-arm
 
+      - name: Baixar e Preparar Headers do Kernel ARM64
+        run: |
+          # Baixa o código fonte do Linux 6.1
+          wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.tar.xz
+          tar -xf linux-6.1.tar.xz
+
+          # Entra na pasta do kernel recém-baixado
+          cd linux-6.1
+
+          # Prepara a configuração do kernel alvo para arquitetura ARM64
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules_prepare
+
+          # Volta para a raiz do seu repositório
+          cd ..
+
       - name: Build Module
         run: |
-          # Aqui você rodaria o make usando o cross-compiler
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+          # Agora rodamos o SEU Makefile, mas apontando o KDIR para a pasta que preparamos
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KDIR=$GITHUB_WORKSPACE/linux-6.1
 
       - name: Criar disco de transferencia com o modulo
         run: |
