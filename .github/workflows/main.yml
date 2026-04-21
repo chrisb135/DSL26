@@ -40,15 +40,21 @@ jobs:
 
           # 2. Baixa a imagem do disco rootfs (qcow2)
           # SUBSTITUA A URL ABAIXO PELO LINK REAL DO SEU ARQUIVO
-          wget -O vm/arm64_img.qcow2 "https://link-para-seu-servidor/arm64_img.qcow2"
+          wget -O vm/arm64_img.qcow2 "https://github.com/chrisb135/DSL26/releases/download/First_release/base_arm64_img.qcow2"
 
           # 3. Baixa o kernel compilado (Image)
           # SUBSTITUA A URL ABAIXO PELO LINK REAL DO SEU ARQUIVO
-          wget -O iio/arch/arm64/boot/Image "https://link-para-seu-servidor/Image"
+          wget -O iio/arch/arm64/boot/Image "https://github.com/chrisb135/DSL26/releases/download/First_release/Image"
 
           # 4. Baixa o initrd
           # SUBSTITUA A URL ABAIXO PELO LINK REAL DO SEU ARQUIVO
-          wget -O vm/arm64_boot/initrd.img-6.1.0-43-arm64 "https://link-para-seu-servidor/initrd.img-6.1.0-43-arm64"
+          wget -O vm/arm64_boot/initrd.tar.gz "https://github.com/chrisb135/DSL26/releases/download/First_release/initrd.tar.gz"
+
+          # 5. Descompacta o arquivo na pasta correta e apaga o .tar.gz para limpar espaço
+          cd vm/arm64_boot/
+          tar -xzvf initrd.tar.gz
+          rm initrd.tar.gz
+          cd ../../
 
       - name: Run Integration Test in QEMU
         run: |
